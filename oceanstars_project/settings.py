@@ -105,11 +105,12 @@ if not DATABASES['default']:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DB_NAME', 'railway'),
             'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD_OCEANS', ''),  # Prevents KeyError crashes!
+            'PASSWORD': os.environ.get('DB_PASSWORD_OCEANS'),  # Prevents KeyError crashes!
             'HOST': os.environ.get('DB_HOST', 'iriguchi.proxy.rlwy.net'),
             'PORT': os.environ.get('DB_PORT', '25137'),
         }
     }
+    
 
 
 # --- PASSWORD VALIDATION ---
