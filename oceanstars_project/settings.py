@@ -40,7 +40,7 @@ SECRET_KEY = 'django-insecure-05qej-9dbjlk*0)nj@zx^^o4kt*bd(==&3=m6-w50$-n4re$q2
 # SECURITY WARNING: don't run with debug turned on in production!
 # FIXED: Removed 'https://' prefix because Django expects domains or IPs here only
 ALLOWED_HOSTS = [
-    'fcs-production.up.railway.app', 
+    'fcs-production.up.railway.app'
     
 ]
 
@@ -108,7 +108,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': os.environ.get('DB_PASSWORD_OCEANS'),
+        'PASSWORD': os.environ['DB_PASSWORD_OCEANS'],
         'HOST': 'iriguchi.proxy.rlwy.net',
         'PORT': '25137',
     }
