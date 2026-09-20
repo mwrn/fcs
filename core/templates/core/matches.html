@@ -1,0 +1,372 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Ocean Stars FC | Matches & Fixtures{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Stadium Hero Header Section */
+    .matches-hero-banner {
+        position: relative;
+        border-radius: 28px;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.92), rgba(15, 23, 42, 0.95)), 
+                    url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+        padding: 3rem 2.5rem;
+        margin-bottom: 2.5rem;
+        color: var(--pure-white);
+        box-shadow: 0 20px 40px -15px rgba(2, 132, 199, 0.3);
+        animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroFadeIn {
+        from { opacity: 0; transform: translateY(-15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .matches-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 650px;
+    }
+    .matches-hero-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        color: var(--pure-white);
+    }
+    .matches-hero-subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    /* Outer Page Container Limit */
+    .matches-page-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding-bottom: 5rem;
+        animation: pageEntrance 0.6s ease-out forwards;
+    }
+    @keyframes pageEntrance {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Filter Tabs Styling */
+    .match-filters {
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 2rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    .filter-btn {
+        background: var(--pure-white);
+        border: 1px solid #cbd5e1;
+        color: var(--text-gray);
+        padding: 0.6rem 1.4rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background: var(--ocean-dark);
+        color: var(--pure-white);
+        border-color: var(--ocean-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(15, 23, 42, 0.2);
+    }
+
+    /* Matches Grid Layout */
+    .matches-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    /* High-End Match Score Card */
+    .match-card {
+        background: var(--pure-white);
+        border-radius: 20px;
+        padding: 1.75rem 2.2rem;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04), 0 8px 10px -6px rgba(0,0,0,0.02);
+        border: 1px solid #e2e8f0;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        animation: cardAppear 0.5s ease backwards;
+    }
+    @keyframes cardAppear {
+        from { opacity: 0; transform: scale(0.98); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .match-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: var(--ocean-light);
+        transition: background 0.3s ease;
+    }
+    .match-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 35px -10px rgba(2, 132, 199, 0.15);
+        border-color: var(--ocean-light);
+    }
+    .match-card:hover::before {
+        background: var(--ocean-blue);
+    }
+
+    /* Match Info / Meta (Left column) */
+    .match-meta-side {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-weight: 800;
+        text-transform: uppercase;
+        width: fit-content;
+        letter-spacing: 0.5px;
+    }
+    .status-badge.upcoming {
+        background: rgba(3, 105, 161, 0.08);
+        color: #0369a1;
+        border: 1px solid rgba(3, 105, 161, 0.15);
+    }
+    .status-badge.full-time {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+    .match-date-info {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Scoreboard Center Arena */
+    .match-arena-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+    }
+    .teams-display {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--ocean-dark);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .team-badge-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .team-badge-name.ocean-highlight {
+        color: var(--ocean-blue);
+    }
+    .scoreboard-box {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        padding: 0.5rem 1.25rem;
+        border-radius: 12px;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--ocean-dark);
+        letter-spacing: 2px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    /* Action/Details Right Column */
+    .match-action-side {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .match-view-pill {
+        background: rgba(2, 132, 199, 0.06);
+        color: var(--ocean-blue);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+    }
+    .match-card:hover .match-view-pill {
+        background: var(--ocean-blue);
+        color: var(--pure-white);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: var(--pure-white);
+        border-radius: 20px;
+        border: 2px dashed #cbd5e1;
+        grid-column: 1 / -1;
+    }
+    .empty-state i {
+        font-size: 3.5rem;
+        color: var(--ocean-light);
+        margin-bottom: 1rem;
+    }
+    .empty-state p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        font-weight: 600;
+        max-width: 450px;
+        margin: 0 auto;
+    }
+
+    /* Mobile Responsive Overhaul */
+    @media (max-width: 850px) {
+        .match-card {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            padding: 1.5rem;
+        }
+        .match-action-side {
+            justify-content: flex-start;
+        }
+        .teams-display {
+            font-size: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .matches-hero-banner {
+            padding: 2.2rem 1.5rem;
+        }
+        .matches-hero-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="matches-page-wrapper">
+    
+    <!-- Sleek Stadium Hero Banner -->
+    <div class="matches-hero-banner">
+        <div class="matches-hero-content">
+            <h1 class="matches-hero-title">Match Fixtures & Results</h1>
+            <p class="matches-hero-subtitle">Track every battle, upcoming fixture, and live showdown of Ocean Stars FC across the tournament campaign.</p>
+        </div>
+    </div>
+
+    <!-- Interactive Filter Buttons -->
+    <div class="match-filters">
+        <button class="filter-btn active" onclick="filterMatches('all', event)">All Matches</button>
+        <button class="filter-btn" onclick="filterMatches('Upcoming', event)">Upcoming Fixtures</button>
+        <button class="filter-btn" onclick="filterMatches('Full Time', event)">Completed Results</button>
+    </div>
+
+    <!-- Match Cards Feed -->
+    <div class="matches-grid">
+        {% for match in matches %}
+        <div class="match-card" data-status="{{ match.status }}">
+            
+            <!-- Left Info: Status & Date -->
+            <div class="match-meta-side">
+                {% if match.status == 'Upcoming' %}
+                    <span class="status-badge upcoming"><i class="fa-regular fa-clock"></i> Upcoming</span>
+                {% else %}
+                    <span class="status-badge full-time"><i class="fa-solid fa-flag-checkered"></i> Full Time</span>
+                {% endif %}
+                
+                <div class="match-date-info">
+                    <i class="fa-regular fa-calendar-days" style="color: var(--ocean-blue);"></i> {{ match.match_date|date:"F j, Y • g:i A" }}
+                </div>
+            </div>
+            
+            <!-- Center Arena: Teams & Scoreboard -->
+            <div class="match-arena-center">
+                <div class="teams-display">
+                    {% if match.is_home %}
+                        <span class="team-badge-name ocean-highlight">
+                            <i class="fa-solid fa-shield-halved"></i> Ocean Stars FC
+                        </span>
+                        <span style="color: #94a3b8; font-weight: 500; font-size: 0.9rem;">vs</span>
+                        <span class="team-badge-name">{{ match.opponent }}</span>
+                    {% else %}
+                        <span class="team-badge-name">{{ match.opponent }}</span>
+                        <span style="color: #94a3b8; font-weight: 500; font-size: 0.9rem;">vs</span>
+                        <span class="team-badge-name ocean-highlight">
+                            <i class="fa-solid fa-shield-halved"></i> Ocean Stars FC
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="scoreboard-box">
+                    <span>{{ match.home_score }}</span>
+                    <span style="color: #94a3b8; margin: 0 4px; font-weight: 400;">-</span>
+                    <span>{{ match.away_score }}</span>
+                </div>
+            </div>
+
+            <!-- Right Action Tag -->
+            <div class="match-action-side">
+                <div class="match-view-pill">
+                    {% if match.status == 'Upcoming' %}Match Preview{% else %}Match Report{% endif %}
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <h3 style="color: var(--ocean-dark); font-weight: 800; margin-bottom: 0.5rem; font-size: 1.2rem;">No Matches Recorded</h3>
+            <p>No fixture schedules or game scores found in the system right now. Head over to your Django Admin panel to add your matches.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    function filterMatches(statusType, event) {
+        // Toggle active button style
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Filter cards smoothly
+        const cards = document.querySelectorAll('.match-card');
+        cards.forEach(card => {
+            const cardStatus = card.getAttribute('data-status');
+            if (statusType === 'all' || cardStatus === statusType) {
+                card.style.display = 'grid';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

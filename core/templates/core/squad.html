@@ -1,0 +1,364 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Ocean Stars FC | Squad & Tactics{% endblock %}
+
+{% block extra_head %}
+<style>
+    .squad-container {
+        animation: fadeInPage 0.5s ease-out forwards;
+    }
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .squad-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .view-toggles {
+        display: flex;
+        background: var(--pure-white);
+        padding: 4px;
+        border-radius: 50px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .view-btn {
+        background: transparent;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .view-btn.active {
+        background: var(--ocean-dark);
+        color: var(--pure-white);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+    .formation-selector {
+        display: none;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--pure-white);
+        padding: 0.35rem 1rem;
+        border-radius: 50px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .formation-selector label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-gray);
+    }
+    .formation-selector select {
+        background: var(--off-white);
+        border: 1px solid #cbd5e1;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 700;
+        color: var(--ocean-dark);
+        outline: none;
+        cursor: pointer;
+    }
+    .roster-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 2rem;
+    }
+    .player-card {
+        background: var(--pure-white);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        text-align: center;
+        border-bottom: 4px solid var(--ocean-light);
+        transition: all 0.35s ease;
+        position: relative;
+    }
+    .player-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 24px -4px rgba(2, 132, 199, 0.15);
+    }
+    .player-img-wrapper {
+        height: 220px;
+        background: linear-gradient(135deg, var(--ocean-dark), #1e293b);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .player-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+    }
+    .player-number-badge {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(2, 132, 199, 0.9);
+        color: var(--pure-white);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        border: 2px solid var(--pure-white);
+    }
+    .player-fallback-num {
+        font-size: 4rem;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.15);
+    }
+    .player-info { padding: 1.5rem; }
+    .player-name { font-size: 1.2rem; font-weight: 800; color: var(--ocean-dark); }
+    .player-position { color: var(--ocean-blue); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; }
+
+    /* Tactical Pitch EA FC Layout */
+    .pitch-view-container {
+        display: none;
+        background: linear-gradient(180deg, #166534 0%, #15803d 100%);
+        border-radius: 20px;
+        padding: 2.5rem 1.5rem;
+        min-height: 650px;
+        box-shadow: inset 0 0 50px rgba(0,0,0,0.4), 0 10px 25px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+        border: 3px solid #22c55e;
+    }
+    .pitch-view-container::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.35);
+        transform: translateY(-50%);
+    }
+    .pitch-center-circle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 140px;
+        height: 140px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+    .pitch-rows {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column-reverse; /* Goalkeeper at bottom, lines tracking up */
+        justify-content: space-between;
+        height: 100%;
+        min-height: 580px;
+    }
+    .pitch-line {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+    }
+    .pitch-player-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        transition: transform 0.3s ease;
+    }
+    .pitch-player-node:hover { transform: scale(1.1); }
+    .pitch-jersey {
+        width: 44px;
+        height: 44px;
+        background: var(--ocean-dark);
+        color: var(--pure-white);
+        border: 2px solid var(--ocean-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .pitch-player-tag {
+        background: rgba(15, 23, 42, 0.85);
+        color: var(--pure-white);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container squad-container">
+    <h2 class="section-title">First Team Roster & Tactics</h2>
+    
+    <div class="squad-controls">
+        <div class="view-toggles">
+            <button class="view-btn active" id="gridToggleBtn" onclick="switchView('grid')">
+                <i class="fa-solid fa-grip"></i> Grid View
+            </button>
+            <button class="view-btn" id="pitchToggleBtn" onclick="switchView('pitch')">
+                <i class="fa-solid fa-chess-board"></i> Tactical Pitch
+            </button>
+        </div>
+
+        <div class="formation-selector" id="formationDropdownWrapper">
+            <label for="formationSelect"><i class="fa-solid fa-shield-halved"></i> Formation:</label>
+            <select id="formationSelect" onchange="updateFormation()">
+                {% for form in formations %}
+                    <option value="{{ form.code }}">{{ form.name }} ({{ form.code }})</option>
+                {% empty %}
+                    <option value="4-4-2">4-4-2 (Default)</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- View 1: Roster Grid View with Static Image Path Matching Your Example -->
+    <div class="roster-grid" id="rosterGridView">
+        {% for player in players %}
+        <div class="player-card">
+            <div class="player-img-wrapper">
+                {% if player.image %}
+                    <!-- Exact template structure matching your requested format -->
+                    <img src="{% static player.image %}" alt="{{ player.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="player-fallback-num" style="display:none;">{{ player.jersey_number }}</div>
+                {% else %}
+                    <div class="player-fallback-num">{{ player.jersey_number }}</div>
+                {% endif %}
+                <div class="player-number-badge">{{ player.jersey_number }}</div>
+            </div>
+            <div class="player-info">
+                <h3 class="player-name">{{ player.name }}</h3>
+                <p class="player-position">{{ player.position }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="player-card" style="grid-column: 1 / -1; padding: 3rem;">
+            <p style="color: var(--text-gray); font-weight: 600;">No players added yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- View 2: Tactical Pitch View -->
+    <div class="pitch-view-container" id="pitchViewContainer">
+        <div class="pitch-center-circle"></div>
+        <div class="pitch-rows" id="pitchRowsContent"></div>
+    </div>
+</div>
+
+<script>
+    const squadPlayers = [
+        {% for player in players %}
+        {
+            name: "{{ player.name|escapejs }}",
+            position: "{{ player.position|lower|escapejs }}",
+            number: "{{ player.jersey_number }}"
+        },
+        {% empty %}
+        { name: "Player", position: "goalkeeper", number: "1" }
+        {% endfor %}
+    ];
+
+    function switchView(mode) {
+        const gridView = document.getElementById('rosterGridView');
+        const pitchView = document.getElementById('pitchViewContainer');
+        const gridBtn = document.getElementById('gridToggleBtn');
+        const pitchBtn = document.getElementById('pitchToggleBtn');
+        const formationWrapper = document.getElementById('formationDropdownWrapper');
+
+        if (mode === 'grid') {
+            gridView.style.display = 'grid';
+            pitchView.style.display = 'none';
+            gridBtn.classList.add('active');
+            pitchBtn.classList.remove('active');
+            formationWrapper.style.display = 'none';
+        } else {
+            gridView.style.display = 'none';
+            pitchView.style.display = 'block';
+            pitchBtn.classList.add('active');
+            gridBtn.classList.remove('active');
+            formationWrapper.style.display = 'flex';
+            updateFormation();
+        }
+    }
+
+    function updateFormation() {
+        const selectElement = document.getElementById('formationSelect');
+        const formationCode = selectElement.value.trim();
+        
+        const container = document.getElementById('pitchRowsContent');
+        container.innerHTML = '';
+
+        let layout = [];
+        if (formationCode.includes('-')) {
+            layout = formationCode.split('-').map(Number).filter(n => !isNaN(n));
+        }
+        if (layout.length === 0) {
+            layout = formationCode.replace(/[^0-9]/g, '').split('').map(Number);
+        }
+        if (layout.length === 0) {
+            layout = [4, 4, 2];
+        }
+
+        let gks = squadPlayers.filter(p => p.position.includes('goal') || p.position.includes('gk'));
+        let defs = squadPlayers.filter(p => p.position.includes('def'));
+        let mids = squadPlayers.filter(p => p.position.includes('mid'));
+        let fwds = squadPlayers.filter(p => p.position.includes('forward') || p.position.includes('striker') || p.position.includes('attack'));
+        let unassigned = squadPlayers.filter(p => !gks.includes(p) && !defs.includes(p) && !mids.includes(p) && !fwds.includes(p));
+
+        let gk = gks.length > 0 ? gks[0] : { name: 'GK', number: '1' };
+        let availableOutfield = [...defs, ...mids, ...fwds, ...unassigned];
+
+        let linesToRender = [];
+        linesToRender.push([gk]);
+
+        layout.forEach(count => {
+            let lineGroup = availableOutfield.splice(0, count);
+            while (lineGroup.length < count) {
+                lineGroup.push({ name: 'Player', number: '—' });
+            }
+            linesToRender.push(lineGroup);
+        });
+
+        linesToRender.forEach(linePlayers => {
+            const lineDiv = document.createElement('div');
+            lineDiv.className = 'pitch-line';
+
+            linePlayers.forEach(p => {
+                const node = document.createElement('div');
+                node.className = 'pitch-player-node';
+                node.innerHTML = `
+                    <div class="pitch-jersey">${p.number || '★'}</div>
+                    <div class="pitch-player-tag">${p.name}</div>
+                `;
+                lineDiv.appendChild(node);
+            });
+            container.appendChild(lineDiv);
+        });
+    }
+</script>
+{% endblock %}

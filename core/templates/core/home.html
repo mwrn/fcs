@@ -1,0 +1,857 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Ocean Stars FC | Home{% endblock %}
+
+{% block content %}
+<style>
+    .hero {
+        height: 75vh;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(56, 189, 248, 0.6)), 
+                    url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: var(--pure-white);
+        padding: 0 1rem;
+        animation: fadeInPage 0.8s ease-out;
+    }
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .hero h1 span {
+        color: var(--ocean-light);
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto 2rem auto;
+        color: #e2e8f0;
+    }
+
+    /* Quick Action Redirect Navigation Bar */
+    .quick-nav-bar {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: var(--ocean-light);
+        color: var(--ocean-dark);
+        padding: 0.8rem 1.8rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn:hover {
+        background-color: var(--pure-white);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(56, 189, 248, 0.6);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--pure-white);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        box-shadow: none;
+    }
+
+    .btn-outline:hover {
+        background: var(--pure-white);
+        color: var(--ocean-dark);
+        border-color: var(--pure-white);
+    }
+
+    /* Scoreboard ticker */
+    .ticker-container {
+        max-width: 800px;
+        margin: -40px auto 0 auto;
+        position: relative;
+        z-index: 10;
+        background: var(--pure-white);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 1.5rem;
+        border-top: 5px solid var(--ocean-light);
+    }
+
+    .score-box {
+        font-size: 2rem;
+        font-weight: 900;
+        background: var(--off-white);
+        padding: 0.4rem 1.2rem;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        color: var(--ocean-dark);
+    }
+
+    /* Group Stage Section Styles (Ported & Adapted from news.html) */
+    .group-section-wrapper {
+        max-width: 1200px;
+        margin: 4rem auto 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .comp-card {
+        background: var(--pure-white);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }
+
+    .comp-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .comp-card-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--ocean-dark);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+    }
+
+    .comp-card-title i {
+        color: var(--ocean-blue);
+    }
+
+    /* Group Selector Pills */
+    .group-selector-pills {
+        display: flex;
+        gap: 6px;
+        background: #f1f5f9;
+        padding: 5px;
+        border-radius: 14px;
+    }
+
+    .group-pill {
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .group-pill.active {
+        background: var(--pure-white);
+        color: var(--ocean-blue);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    .group-stage-container {
+        display: none;
+        animation: fadeInGroup 0.4s ease forwards;
+    }
+
+    .group-stage-container.active {
+        display: block;
+    }
+
+    @keyframes fadeInGroup {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .standings-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .standings-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.95rem;
+    }
+
+    .standings-table th {
+        background: #f8fafc;
+        color: var(--text-gray);
+        font-weight: 800;
+        padding: 14px 12px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .standings-table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        font-weight: 700;
+        color: var(--ocean-dark);
+    }
+
+    .standings-table tr.highlight-team {
+        background: rgba(2, 132, 199, 0.08);
+    }
+
+    .standings-table tr.highlight-team td {
+        color: var(--ocean-blue);
+        font-weight: 900;
+    }
+
+    .pos-badge {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        border-radius: 8px;
+        background: #f1f5f9;
+        font-size: 0.85rem;
+        font-weight: 900;
+    }
+
+    .highlight-team .pos-badge {
+        background: var(--ocean-blue);
+        color: var(--pure-white);
+    }
+
+    /* Slideshow Section Styles */
+    .slideshow-section {
+        max-width: 1200px;
+        margin: 4rem auto 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.4rem;
+        font-weight: 900;
+        margin-bottom: 2rem;
+        color: var(--ocean-dark, #0f172a);
+        letter-spacing: -0.5px;
+    }
+
+    .carousel-container {
+        position: relative;
+        width: 100%;
+        height: 480px;
+        overflow: hidden;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        background: #0f172a;
+    }
+
+    .carousel-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+    }
+
+    .carousel-slide.active {
+        opacity: 1;
+        z-index: 2;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .carousel-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2.5rem;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);
+        color: var(--pure-white);
+        z-index: 3;
+    }
+
+    .carousel-caption h3 {
+        font-size: 2rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        color: var(--ocean-light);
+    }
+
+    .carousel-caption p {
+        font-size: 1.05rem;
+        margin: 0;
+        color: #e2e8f0;
+    }
+
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(15, 23, 42, 0.6);
+        color: var(--pure-white);
+        border: none;
+        cursor: pointer;
+        z-index: 10;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background 0.3s;
+        font-size: 1.2rem;
+    }
+
+    .carousel-btn:hover {
+        background: var(--ocean-light);
+        color: var(--ocean-dark);
+    }
+
+    .carousel-btn.prev { left: 20px; }
+    .carousel-btn.next { right: 20px; }
+
+    .carousel-dots {
+        position: absolute;
+        bottom: 20px;
+        right: 35px;
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .dot.active {
+        background: var(--ocean-light);
+    }
+
+    /* Gallery / Media Grid Section */
+    .gallery-section {
+        max-width: 1200px;
+        margin: 4rem auto;
+        padding: 0 1rem;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.8rem;
+    }
+
+    .media-card {
+        background: var(--pure-white);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid #e2e8f0;
+    }
+
+    .media-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 35px rgba(2, 132, 199, 0.15);
+        border-color: var(--ocean-light);
+    }
+
+    .media-container {
+        width: 100%;
+        height: 240px; 
+        background: #000;
+        position: relative;
+    }
+
+    .media-card img, .media-card video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .media-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .media-content h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--ocean-dark);
+        font-weight: 800;
+    }
+
+    .media-content p {
+        font-size: 0.92rem;
+        color: var(--text-gray);
+        margin: 0;
+        line-height: 1.6;
+    }
+</style>
+
+<!-- Hero Section with Direct Redirect Buttons -->
+<div class="hero">
+    <div>
+        <h1>Shining Bright on the Pitch</h1>
+        <p>Official home of Ocean Stars FC. Driven by team spirit, sharp tactics, and our iconic ocean-blue jersey.</p>
+        
+        <!-- Direct Redirect Navigation CTAs -->
+        <div class="quick-nav-bar">
+            <a href="{% url 'matches' %}" class="btn">
+                <i class="fa-solid fa-futbol"></i> Match Schedule
+            </a>
+            <a href="{% url 'news' %}" class="btn btn-outline">
+                <i class="fa-solid fa-newspaper"></i> News & Standings
+            </a>
+            <a href="{% url 'squad' %}" class="btn btn-outline">
+                <i class="fa-solid fa-users"></i> Meet Squad
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Scoreboard ticker -->
+<div class="ticker-container">
+    <div style="font-weight: 800; font-size: 1.05rem;">{% if latest_match.is_home %}Ocean Stars FC{% else %}{{ latest_match.opponent }}{% endif %}</div>
+    <div class="score-box">{% if latest_match %}{{ latest_match.home_score }} - {{ latest_match.away_score }}{% else %}2 - 1{% endif %}</div>
+    <div style="font-weight: 800; font-size: 1.05rem;">{% if not latest_match.is_home %}Ocean Stars FC{% else %}{{ latest_match.opponent|default:"Holac FC" }}{% endif %}</div>
+</div>
+
+<!-- Latest Club News Preview Grid -->
+<div class="container" style="max-width: 1200px; margin: 4rem auto; padding: 0 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--ocean-dark); margin: 0;">Latest Club News</h2>
+        <a href="{% url 'news' %}" style="color: var(--ocean-blue); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">View All News <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+        {% for news in news_list %}
+        <div style="background: var(--pure-white); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; border-left: 6px solid var(--ocean-light);">
+            <span style="font-size: 0.75rem; font-weight: 800; color: var(--ocean-blue); text-transform: uppercase;">{{ news.published_date|date:"F j, Y" }}</span>
+            <h3 style="margin: 0.8rem 0; font-size: 1.3rem; font-weight: 800; color: var(--ocean-dark);">{{ news.title }}</h3>
+            <p style="color: var(--text-gray); font-size: 0.95rem; line-height: 1.6;">{{ news.summary }}</p>
+        </div>
+        {% empty %}
+        <div style="background: var(--pure-white); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; border-left: 6px solid var(--ocean-light);">
+            <span style="font-size: 0.75rem; font-weight: 800; color: var(--ocean-blue); text-transform: uppercase;">Official Statement</span>
+            <h3 style="margin: 0.8rem 0; font-size: 1.3rem; font-weight: 800; color: var(--ocean-dark);">Victory at Full Time!</h3>
+            <p style="color: var(--text-gray); font-size: 0.95rem; line-height: 1.6;">Ocean Stars FC secured a stellar win thanks to high-intensity discipline and stellar teamwork.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Group Stage Section (Ported dynamically from news.html) -->
+<section class="group-section-wrapper">
+    <div class="comp-card">
+        <div class="comp-header-flex">
+            <h3 class="comp-card-title"><i class="fa-solid fa-layer-group"></i> Tournament Group Standings</h3>
+            
+            <!-- Group Filter Pills (Switch between Group A, B, D, E) -->
+            <div class="group-selector-pills">
+                <button class="group-pill active" onclick="switchGroup('A', event)">Gr. A</button>
+                <button class="group-pill" onclick="switchGroup('B', event)">Gr. B</button>
+                <button class="group-pill" onclick="switchGroup('D', event)">Gr. D</button>
+                <button class="group-pill" onclick="switchGroup('E', event)">Gr. E</button>
+            </div>
+        </div>
+
+        <!-- GROUP A -->
+        <div class="group-stage-container active" id="group-A-pane">
+            <div class="standings-table-wrapper">
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Pos</th>
+                            <th>Team (Group A)</th>
+                            <th style="text-align: center;">P</th>
+                            <th style="text-align: center;">W</th>
+                            <th style="text-align: center;">GD</th>
+                            <th style="text-align: center;">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in group_standings %}
+                            {% if row.group_name == 'A' %}
+                            <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                <td><span class="pos-badge">{{ row.position }}</span></td>
+                                <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                <td style="text-align: center;">{{ row.played }}</td>
+                                <td style="text-align: center;">{{ row.won }}</td>
+                                <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                            </tr>
+                            {% endif %}
+                        {% empty %}
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 2rem;">No Group A teams added in Admin panel yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GROUP B -->
+        <div class="group-stage-container" id="group-B-pane">
+            <div class="standings-table-wrapper">
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Pos</th>
+                            <th>Team (Group B)</th>
+                            <th style="text-align: center;">P</th>
+                            <th style="text-align: center;">W</th>
+                            <th style="text-align: center;">GD</th>
+                            <th style="text-align: center;">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in group_standings %}
+                            {% if row.group_name == 'B' %}
+                            <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                <td><span class="pos-badge">{{ row.position }}</span></td>
+                                <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                <td style="text-align: center;">{{ row.played }}</td>
+                                <td style="text-align: center;">{{ row.won }}</td>
+                                <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                            </tr>
+                            {% endif %}
+                        {% empty %}
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 2rem;">No Group B teams added in Admin panel yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GROUP D -->
+        <div class="group-stage-container" id="group-D-pane">
+            <div class="standings-table-wrapper">
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Pos</th>
+                            <th>Team (Group D)</th>
+                            <th style="text-align: center;">P</th>
+                            <th style="text-align: center;">W</th>
+                            <th style="text-align: center;">GD</th>
+                            <th style="text-align: center;">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in group_standings %}
+                            {% if row.group_name == 'D' %}
+                            <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                <td><span class="pos-badge">{{ row.position }}</span></td>
+                                <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                <td style="text-align: center;">{{ row.played }}</td>
+                                <td style="text-align: center;">{{ row.won }}</td>
+                                <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                            </tr>
+                            {% endif %}
+                        {% empty %}
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 2rem;">No Group D teams added in Admin panel yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GROUP E -->
+        <div class="group-stage-container" id="group-E-pane">
+            <div class="standings-table-wrapper">
+                <table class="standings-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Pos</th>
+                            <th>Team (Group E)</th>
+                            <th style="text-align: center;">P</th>
+                            <th style="text-align: center;">W</th>
+                            <th style="text-align: center;">GD</th>
+                            <th style="text-align: center;">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in group_standings %}
+                            {% if row.group_name == 'E' %}
+                            <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                <td><span class="pos-badge">{{ row.position }}</span></td>
+                                <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                <td style="text-align: center;">{{ row.played }}</td>
+                                <td style="text-align: center;">{{ row.won }}</td>
+                                <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                            </tr>
+                            {% endif %}
+                        {% empty %}
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 2rem;">No Group E teams added in Admin panel yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Slideshow Section (Static Images) -->
+<section class="slideshow-section">
+    <h2 class="section-title">Club Spotlight</h2>
+    <div class="carousel-container">
+        
+        <!-- Slide 1 -->
+        <div class="carousel-slide active">
+            <img src="{% static 'images/fc4.jpg' %}" alt="Team Huddle">
+            <div class="carousel-caption">
+                <h3>United We Stand</h3>
+                <p>Pre-match focus and tactical alignment in the tunnel.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-slide">
+            <img src="{% static 'images/str.jpg' %}" alt="Stadium View">
+            <div class="carousel-caption">
+                <h3>Our Fortified Home Ground</h3>
+                <p>Where thousands roar in unison for the ocean-blue colors.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-slide">
+            <img src="{% static 'images/fcs.jpg' %}" alt="Action Shot">
+            <div class="carousel-caption">
+                <h3>Dominating the Midfield</h3>
+                <p>High pressing and sharp distribution turning defense into attack.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="carousel-slide">
+            <img src="{% static 'images/fc.jpg' %}" alt="Trophy Celebration">
+            <div class="carousel-caption">
+                <h3>Chasing Glory</h3>
+                <p>Pushing every single limit to bring home the silverware this season.</p>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+
+        <!-- Dots Indicators -->
+        <div class="carousel-dots">
+            <span class="dot active" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+        </div>
+    </div>
+</section>
+
+<!-- Media Gallery Section (8 Cards) -->
+<section class="gallery-section">
+    <h2 class="section-title">Club Highlights & Media</h2>
+    <div class="cards-grid">
+        
+        <!-- Card 1: Image -->
+        <div class="media-card">
+            <div class="media-container">
+                <img src="{% static 'images/fc4.jpg' %}" alt="Match Action">
+            </div>
+            <div class="media-content">
+                <h4>Match Day Intensity</h4>
+                <p>Midfielder breaking through defensive lines during the derby.</p>
+            </div>
+        </div>
+
+        <!-- Card 2: Video -->
+        <div class="media-card">
+            <div class="media-container">
+                <video controls preload="metadata" style="width:100%; height:100%; object-fit:cover;">
+                    <source src="{% static 'videos/highlights/goal_celebration.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="media-content">
+                <h4>Stunner Free Kick</h4>
+                <p>Relive the incredible 35-yard screamer into the top corner.</p>
+            </div>
+        </div>
+
+        <!-- Card 3: Image -->
+        <div class="media-card">
+            <div class="media-container">
+                <img src="{% static 'images/str.jpg' %}" alt="Fans Cheering">
+            </div>
+            <div class="media-content">
+                <h4>The 12th Man</h4>
+                <p>Our incredible supporters packing out the stands every game.</p>
+            </div>
+        </div>
+
+        <!-- Card 4: Video -->
+        <div class="media-card">
+            <div class="media-container">
+                <video controls preload="metadata" style="width:100%; height:100%; object-fit:cover;">
+                    <source src="{% static 'videos/highlights/locker_room_talk.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="media-content">
+                <h4>Inside the Locker Room</h4>
+                <p>Coach's inspiring halftime speech that shifted momentum.</p>
+            </div>
+        </div>
+
+        <!-- Card 5: Image -->
+        <div class="media-card">
+            <div class="media-container">
+                <img src="{% static 'images/fcs.jpg' %}" alt="Training Session">
+            </div>
+            <div class="media-content">
+                <h4>Sharp Tactical Drills</h4>
+                <p>Focus and precision on display during mid-week training.</p>
+            </div>
+        </div>
+
+        <!-- Card 6: Video -->
+        <div class="media-card">
+            <div class="media-container">
+                <video controls preload="metadata" style="width:100%; height:100%; object-fit:cover;">
+                    <source src="{% static 'videos/highlights/top_saves.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="media-content">
+                <h4>Heroic Goalkeeping</h4>
+                <p>A double-save masterclass to preserve the clean sheet.</p>
+            </div>
+        </div>
+
+        <!-- Card 7: Image -->
+        <div class="media-card">
+            <div class="media-container">
+                <img src="{% static 'images/fc.jpg' %}" alt="Youth Academy">
+            </div>
+            <div class="media-content">
+                <h4>Future Stars</h4>
+                <p>Investing heavily in our U-18 youth development system.</p>
+            </div>
+        </div>
+
+        <!-- Card 8: Video -->
+        <div class="media-card">
+            <div class="media-container">
+                <video controls preload="metadata" style="width:100%; height:100%; object-fit:cover;">
+                    <source src="{% static 'videos/highlights/season_trailer.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="media-content">
+                <h4>2026 Season Trailer</h4>
+                <p>Catch the official hype video as we chase silverware this year.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Combined Scripts for Slideshow and Group Stage Pills -->
+<script>
+    // Slideshow JavaScript Controller
+    let slideIndex = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.dot');
+    let autoSlideInterval;
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        slideIndex = (index + slides.length) % slides.length;
+        
+        slides[slideIndex].classList.add('active');
+        dots[slideIndex].classList.add('active');
+    }
+
+    function moveSlide(n) {
+        showSlide(slideIndex + n);
+        resetTimer();
+    }
+
+    function currentSlide(n) {
+        showSlide(n - 1);
+        resetTimer();
+    }
+
+    function autoPlay() {
+        autoSlideInterval = setInterval(() => {
+            showSlide(slideIndex + 1);
+        }, 5000);
+    }
+
+    function resetTimer() {
+        clearInterval(autoSlideInterval);
+        autoPlay();
+    }
+
+    autoPlay();
+
+    // Group stage switcher functionality
+    function switchGroup(groupLetter, event) {
+        const pills = document.querySelectorAll('.group-pill');
+        pills.forEach(p => p.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const panes = document.querySelectorAll('.group-stage-container');
+        panes.forEach(pane => pane.classList.remove('active'));
+
+        const targetPane = document.getElementById(`group-${groupLetter}-pane`);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+    }
+</script>
+
+{% endblock %}

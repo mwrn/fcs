@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% block title %}Ocean Stars FC | Contact Us{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Get In Touch</h2>
+    
+    <!-- Success Notification Alert -->
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; font-weight: 600; border: 1px solid #6ee7b7;">
+                <i class="fa-solid fa-circle-check"></i> {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; align-items: start;">
+        
+        <!-- Left Side: Club Info & Logo Branding -->
+        <div style="background: var(--pure-white); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; border-top: 5px solid var(--ocean-light);">
+            <div style="width: 80px; height: 80px; background: var(--ocean-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; border: 3px solid var(--ocean-light); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">
+                <span style="font-size: 2.5rem; color: var(--pure-white);">★</span>
+            </div>
+            
+            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--ocean-dark);">Ocean Stars FC</h3>
+            <p style="color: var(--text-gray); font-size: 0.95rem; margin-bottom: 2rem;">Official Club Headquarters & Inquiries</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.2rem; text-align: left; background: var(--off-white); padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: var(--ocean-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ocean-dark); font-weight: bold;">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-gray); display: block; font-weight: 600;">PHONE NUMBER</span>
+                        <strong style="color: var(--ocean-dark); font-size: 1rem;">+1 (555) 382-7827</strong>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: var(--ocean-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ocean-dark); font-weight: bold;">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-gray); display: block; font-weight: 600;">EMAIL ADDRESS</span>
+                        <strong style="color: var(--ocean-dark); font-size: 1rem;">info@oceanstarsfc.com</strong>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: var(--ocean-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ocean-dark); font-weight: bold;">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.8rem; color: var(--text-gray); display: block; font-weight: 600;">LOCATION</span>
+                        <strong style="color: var(--ocean-dark); font-size: 1rem;">Portland, Oregon</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Contact / Tryout Form Connected to DB -->
+        <div style="background: var(--pure-white); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--ocean-dark);">Send Us a Message</h3>
+            
+            <form method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--ocean-dark);">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <span style="color: #ef4444; font-size: 0.8rem;">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" style="background-color: var(--ocean-light); color: var(--ocean-dark); border: none; padding: 0.9rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background-color 0.3s, transform 0.2s; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4); margin-top: 0.5rem;">
+                    Send Message
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

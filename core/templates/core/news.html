@@ -1,0 +1,665 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Ocean Stars FC | Club News & Tournament Hub{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Full Page Smooth Entrance Animation */
+    .news-page-container {
+        animation: pageEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        padding-bottom: 5rem;
+    }
+    @keyframes pageEntrance {
+        from { opacity: 0; transform: translateY(20px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Hero Banner Header with Dynamic Glow */
+    .news-hero-banner {
+        position: relative;
+        background: linear-gradient(135deg, var(--ocean-dark) 0%, #0f172a 50%, var(--ocean-blue) 100%);
+        border-radius: 28px;
+        padding: 3rem 2.5rem;
+        margin-bottom: 3rem;
+        color: var(--pure-white);
+        box-shadow: 0 20px 40px -15px rgba(2, 132, 199, 0.3);
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .news-hero-banner::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(2, 132, 199, 0.4) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .section-title {
+        font-size: 2.8rem;
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        margin: 0 0 8px 0;
+        background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .news-hero-subtitle {
+        color: #94a3b8;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Animated Navigation Tabs */
+    .news-nav-tabs {
+        display: flex;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        padding: 6px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 0.8rem 1.8rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #cbd5e1;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .tab-btn:hover {
+        color: var(--pure-white);
+    }
+    .tab-btn.active {
+        background: var(--pure-white);
+        color: var(--ocean-dark);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        transform: scale(1.02);
+    }
+
+    .content-tab-pane {
+        display: none;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .content-tab-pane.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* News Cards Grid */
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
+    .news-card {
+        background: var(--pure-white);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+    }
+    .news-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--ocean-blue), var(--ocean-light));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .news-card:hover {
+        transform: translateY(-10px) scale(1.01);
+        box-shadow: 0 25px 45px -12px rgba(2, 132, 199, 0.2);
+        border-color: var(--ocean-light);
+    }
+    .news-card:hover::before {
+        opacity: 1;
+    }
+    .news-card-body {
+        padding: 2.5rem;
+    }
+    .news-meta-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--ocean-blue);
+        background: rgba(2, 132, 199, 0.08);
+        padding: 6px 14px;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1.2rem;
+    }
+    .news-title {
+        font-size: 1.45rem;
+        font-weight: 900;
+        line-height: 1.35;
+        margin-bottom: 1rem;
+        color: var(--ocean-dark);
+        transition: color 0.2s ease;
+    }
+    .news-card:hover .news-title {
+        color: var(--ocean-blue);
+    }
+    .news-summary {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+    .news-card-footer {
+        background: #f8fafc;
+        padding: 1.2rem 2.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    /* Tournament Layout */
+    .competition-layout {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 2.5rem;
+    }
+    @media (max-width: 1024px) {
+        .competition-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+    .comp-card {
+        background: var(--pure-white);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }
+    .comp-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.8rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .comp-card-title {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--ocean-dark);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+    }
+    .comp-card-title i {
+        color: var(--ocean-blue);
+        background: rgba(2, 132, 199, 0.1);
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    /* Group Stage Selector Pills */
+    .group-selector-pills {
+        display: flex;
+        gap: 6px;
+        background: #f1f5f9;
+        padding: 5px;
+        border-radius: 14px;
+    }
+    .group-pill {
+        background: transparent;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .group-pill.active {
+        background: var(--pure-white);
+        color: var(--ocean-blue);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Group Tables Container */
+    .group-stage-container {
+        display: none;
+        animation: fadeInGroup 0.4s ease forwards;
+    }
+    .group-stage-container.active {
+        display: block;
+    }
+    @keyframes fadeInGroup {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .standings-table-wrapper {
+        overflow-x: auto;
+    }
+    .standings-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.92rem;
+    }
+    .standings-table th {
+        background: #f8fafc;
+        color: var(--text-gray);
+        font-weight: 800;
+        padding: 14px 12px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .standings-table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        font-weight: 700;
+        color: var(--ocean-dark);
+    }
+    .standings-table tr.highlight-team {
+        background: rgba(2, 132, 199, 0.08);
+    }
+    .standings-table tr.highlight-team td {
+        color: var(--ocean-blue);
+        font-weight: 900;
+    }
+    .pos-badge {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        border-radius: 8px;
+        background: #f1f5f9;
+        font-size: 0.82rem;
+        font-weight: 900;
+    }
+    .highlight-team .pos-badge {
+        background: var(--ocean-blue);
+        color: var(--pure-white);
+    }
+
+    /* Matches Ticker Feed */
+    .dynamic-match-feed {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        max-height: 540px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+    .match-ticker-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 1.4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    .match-ticker-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--ocean-light);
+        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.1);
+    }
+    .match-ticker-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .match-ticker-status {
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--ocean-blue);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .match-ticker-teams {
+        font-size: 1rem;
+        font-weight: 900;
+        color: var(--ocean-dark);
+    }
+    .match-ticker-score {
+        background: var(--pure-white);
+        border: 1px solid #cbd5e1;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 1.2rem;
+        color: var(--ocean-dark);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .empty-state {
+        background: var(--pure-white);
+        padding: 5rem 2rem;
+        border-radius: 24px;
+        text-align: center;
+        grid-column: 1 / -1;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container news-page-container">
+    
+    <!-- Hero Header Banner Inspired by Modern Home Layouts -->
+    <div class="news-hero-banner">
+        <div>
+            <h2 class="section-title">Club News & Tournament Hub</h2>
+            <p class="news-hero-subtitle">Stay updated with official club announcements, live group standings, and match results.</p>
+        </div>
+        
+        <div class="news-nav-tabs">
+            <button class="tab-btn active" id="newsTabBtn" onclick="switchTab('news')">
+                <i class="fa-solid fa-newspaper"></i> Latest News
+            </button>
+            <button class="tab-btn" id="standingsTabBtn" onclick="switchTab('standings')">
+                <i class="fa-solid fa-trophy"></i> Group Stages & Matches
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 1: LATEST NEWS ARTICLES -->
+    <div class="content-tab-pane active" id="newsPane">
+        <div class="news-grid">
+            {% for news in news_list %}
+            <article class="news-card">
+                <div class="news-card-body">
+                    <span class="news-meta-badge">
+                        <i class="fa-regular fa-calendar"></i> {{ news.published_date|date:"F j, Y" }}
+                    </span>
+                    <h3 class="news-title">
+                        {{ news.title }}
+                    </h3>
+                    <p class="news-summary">
+                        {{ news.summary }}
+                    </p>
+                </div>
+                <div class="news-card-footer">
+                    <span><i class="fa-solid fa-shield-halved" style="color: var(--ocean-blue);"></i> Ocean Stars FC Media</span>
+                    <span style="color: var(--ocean-blue); font-weight: 900;">Official Update</span>
+                </div>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fa-solid fa-newspaper" style="font-size: 3.5rem; color: var(--ocean-light); margin-bottom: 1rem;"></i>
+                <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--ocean-dark); font-weight: 900;">No News Articles Found</h3>
+                <p style="color: var(--text-gray); max-width: 400px; margin: 0 auto;">Announcements added via your Django Admin panel will appear here.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- TAB 2: GROUP STAGES & MATCHES FEED -->
+    <div class="content-tab-pane" id="standingsPane">
+        <div class="competition-layout">
+            
+            <!-- Dynamic Group Stage Standings Card -->
+            <div class="comp-card">
+                <div class="comp-header-flex">
+                    <h3 class="comp-card-title"><i class="fa-solid fa-layer-group"></i> Tournament Groups</h3>
+                    
+                    <!-- Group Filter Pills -->
+                    <div class="group-selector-pills">
+                        <button class="group-pill active" onclick="switchGroup('A', event)">Gr. A</button>
+                        <button class="group-pill" onclick="switchGroup('B', event)">Gr. B</button>
+                        <button class="group-pill" onclick="switchGroup('D', event)">Gr. D</button>
+                        <button class="group-pill" onclick="switchGroup('E', event)">Gr. E</button>
+                    </div>
+                </div>
+
+                <!-- GROUP A -->
+                <div class="group-stage-container active" id="group-A-pane">
+                    <div class="standings-table-wrapper">
+                        <table class="standings-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">Pos</th>
+                                    <th>Team (Group A)</th>
+                                    <th style="text-align: center;">P</th>
+                                    <th style="text-align: center;">W</th>
+                                    <th style="text-align: center;">GD</th>
+                                    <th style="text-align: center;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in group_standings %}
+                                    {% if row.group_name == 'A' %}
+                                    <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                        <td><span class="pos-badge">{{ row.position }}</span></td>
+                                        <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                        <td style="text-align: center;">{{ row.played }}</td>
+                                        <td style="text-align: center;">{{ row.won }}</td>
+                                        <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                        <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% empty %}
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 1.5rem;">No Group A teams added in Admin panel.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- GROUP B -->
+                <div class="group-stage-container" id="group-B-pane">
+                    <div class="standings-table-wrapper">
+                        <table class="standings-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">Pos</th>
+                                    <th>Team (Group B)</th>
+                                    <th style="text-align: center;">P</th>
+                                    <th style="text-align: center;">W</th>
+                                    <th style="text-align: center;">GD</th>
+                                    <th style="text-align: center;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in group_standings %}
+                                    {% if row.group_name == 'B' %}
+                                    <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                        <td><span class="pos-badge">{{ row.position }}</span></td>
+                                        <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                        <td style="text-align: center;">{{ row.played }}</td>
+                                        <td style="text-align: center;">{{ row.won }}</td>
+                                        <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                        <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% empty %}
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 1.5rem;">No Group B teams added in Admin panel.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- GROUP D -->
+                <div class="group-stage-container" id="group-D-pane">
+                    <div class="standings-table-wrapper">
+                        <table class="standings-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">Pos</th>
+                                    <th>Team (Group D)</th>
+                                    <th style="text-align: center;">P</th>
+                                    <th style="text-align: center;">W</th>
+                                    <th style="text-align: center;">GD</th>
+                                    <th style="text-align: center;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in group_standings %}
+                                    {% if row.group_name == 'D' %}
+                                    <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                        <td><span class="pos-badge">{{ row.position }}</span></td>
+                                        <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                        <td style="text-align: center;">{{ row.played }}</td>
+                                        <td style="text-align: center;">{{ row.won }}</td>
+                                        <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                        <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% empty %}
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 1.5rem;">No Group D teams added in Admin panel.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- GROUP E -->
+                <div class="group-stage-container" id="group-E-pane">
+                    <div class="standings-table-wrapper">
+                        <table class="standings-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">Pos</th>
+                                    <th>Team (Group E)</th>
+                                    <th style="text-align: center;">P</th>
+                                    <th style="text-align: center;">W</th>
+                                    <th style="text-align: center;">GD</th>
+                                    <th style="text-align: center;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in group_standings %}
+                                    {% if row.group_name == 'E' %}
+                                    <tr class="{% if row.is_ocean_stars %}highlight-team{% endif %}">
+                                        <td><span class="pos-badge">{{ row.position }}</span></td>
+                                        <td>{% if row.is_ocean_stars %}<i class="fa-solid fa-star" style="font-size:0.75rem; margin-right:4px;"></i>{% endif %}{{ row.team_name }}</td>
+                                        <td style="text-align: center;">{{ row.played }}</td>
+                                        <td style="text-align: center;">{{ row.won }}</td>
+                                        <td style="text-align: center;">{{ row.goal_difference }}</td>
+                                        <td style="text-align: center; font-weight: 900;">{{ row.points }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% empty %}
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-gray); padding: 1.5rem;">No Group E teams added in Admin panel.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Matches Feed Card -->
+            <div class="comp-card">
+                <h3 class="comp-card-title" style="margin-bottom: 1.8rem;"><i class="fa-solid fa-futbol"></i> Recent & Upcoming</h3>
+                <div class="dynamic-match-feed">
+                    {% for match in matches %}
+                    <div class="match-ticker-card">
+                        <div class="match-ticker-info">
+                            <span class="match-ticker-status">
+                                {% if match.status == 'Upcoming' %}
+                                    <i class="fa-regular fa-clock"></i> Upcoming • {{ match.match_date|date:"M j" }}
+                                {% else %}
+                                    <i class="fa-solid fa-flag-checkered"></i> Full Time
+                                {% endif %}
+                            </span>
+                            <span class="match-ticker-teams">
+                                {% if match.is_home %}
+                                    Ocean Stars vs {{ match.opponent }}
+                                {% else %}
+                                    {{ match.opponent }} vs Ocean Stars
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="match-ticker-score">
+                            {{ match.home_score }} - {{ match.away_score }}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color: var(--text-gray); font-size: 0.9rem; text-align: center; padding: 2rem;">No matches found. Add fixtures in the Django Admin panel.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Tab switching between News and Standings
+    function switchTab(tabName) {
+        const newsPane = document.getElementById('newsPane');
+        const standingsPane = document.getElementById('standingsPane');
+        const newsBtn = document.getElementById('newsTabBtn');
+        const standingsBtn = document.getElementById('standingsTabBtn');
+
+        if (tabName === 'news') {
+            newsPane.classList.add('active');
+            standingsPane.classList.remove('active');
+            newsBtn.classList.add('active');
+            standingsBtn.classList.remove('active');
+        } else {
+            standingsPane.classList.add('active');
+            newsPane.classList.remove('active');
+            standingsBtn.classList.add('active');
+            newsBtn.classList.remove('active');
+        }
+    }
+
+    // Group stage switching (Group A, B, D, E)
+    function switchGroup(groupLetter, event) {
+        const pills = document.querySelectorAll('.group-pill');
+        pills.forEach(p => p.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const panes = document.querySelectorAll('.group-stage-container');
+        panes.forEach(pane => pane.classList.remove('active'));
+
+        const targetPane = document.getElementById(`group-${groupLetter}-pane`);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+    }
+</script>
+{% endblock %}

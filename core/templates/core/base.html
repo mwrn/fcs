@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ocean Stars FC{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --ocean-light: #38bdf8;
+            --ocean-blue: #0284c7;
+            --ocean-dark: #0f172a;
+            --pure-white: #ffffff;
+            --off-white: #f1f5f9;
+            --text-gray: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--off-white);
+            color: var(--ocean-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navbar */
+        header {
+            background: var(--ocean-dark);
+            color: var(--pure-white);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--ocean-light);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-area:hover {
+            transform: scale(1.02);
+        }
+
+        .club-crest {
+            width: 45px;
+            height: 45px;
+            background: var(--pure-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: var(--ocean-dark);
+            border: 2px solid var(--ocean-light);
+            font-size: 1.1rem;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+            animation: pulseCrest 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseCrest {
+            0%, 100% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.6); }
+            50% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.9); }
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: var(--pure-white);
+        }
+
+        .logo-text span {
+            color: var(--ocean-light);
+        }
+
+        /* Navigation Links */
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav ul li a {
+            color: var(--pure-white);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 4px 0;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--ocean-light);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--ocean-light);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        /* Hamburger Toggle Button (Hidden on Desktop) */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--pure-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            color: var(--ocean-light);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background-color: var(--ocean-light);
+            margin-top: 8px;
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        .section-title:hover::after {
+            width: 90px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--ocean-dark);
+            color: var(--pure-white);
+            text-align: center;
+            padding: 2.5rem 2rem;
+            border-top: 1px solid #1e293b;
+        }
+
+        footer p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media(max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--ocean-dark);
+                border-bottom: 3px solid var(--ocean-light);
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease-in-out;
+                box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+            }
+
+            nav.active {
+                max-height: 350px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0;
+                padding: 1rem 0;
+                width: 100%;
+            }
+
+            nav ul li {
+                width: 100%;
+                text-align: center;
+                padding: 0.75rem 0;
+            }
+
+            nav ul li a::after {
+                display: none; /* simpler hover state for mobile view */
+            }
+
+            nav ul li a {
+                display: block;
+                width: 100%;
+            }
+            
+            nav ul li a:hover {
+                background: rgba(56, 189, 248, 0.1);
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="logo-area">
+                <div class="club-crest">★</div>
+                <div class="logo-text">OCEAN STARS <span>FC</span></div>
+            </a>
+            
+            <button class="mobile-menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav id="navMenu">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'matches' %}">Matches</a></li>
+                    <li><a href="{% url 'squad' %}">Squad</a></li>
+                    <li><a href="{% url 'news' %}">News</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="logo-area" style="justify-content: center; margin-bottom: 1rem;">
+            <div class="club-crest">★</div>
+            <div class="logo-text">OCEAN STARS <span>FC</span></div>
+        </div>
+        <p>&copy; 2026 Ocean Stars FC. All Rights Reserved. Powered by Django.</p>
+    </footer>
+
+    <script>
+        // Toggle mobile navigation menu and animate hamburger icon
+        const menuToggle = document.getElementById('menuToggle');
+        const navMenu = document.getElementById('navMenu');
+        const icon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars');
+            }
+        });
+    </script>
+
+</body>
+</html>
