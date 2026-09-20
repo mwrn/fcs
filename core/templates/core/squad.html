@@ -6,11 +6,21 @@
 <style>
     .squad-container {
         animation: fadeInPage 0.5s ease-out forwards;
+        padding-bottom: 5rem;
     }
     @keyframes fadeInPage {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
     }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: var(--ocean-dark);
+        margin-bottom: 2rem;
+    }
+
     .squad-controls {
         display: flex;
         justify-content: space-between;
@@ -30,9 +40,9 @@
     .view-btn {
         background: transparent;
         border: none;
-        padding: 0.5rem 1.25rem;
+        padding: 0.6rem 1.4rem;
         border-radius: 50px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.85rem;
         color: var(--text-gray);
         cursor: pointer;
@@ -40,6 +50,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
     }
     .view-btn.active {
         background: var(--ocean-dark);
@@ -51,7 +62,7 @@
         align-items: center;
         gap: 0.75rem;
         background: var(--pure-white);
-        padding: 0.35rem 1rem;
+        padding: 0.4rem 1.1rem;
         border-radius: 50px;
         border: 1px solid #e2e8f0;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
@@ -64,13 +75,14 @@
     .formation-selector select {
         background: var(--off-white);
         border: 1px solid #cbd5e1;
-        padding: 0.3rem 0.75rem;
+        padding: 0.35rem 0.75rem;
         border-radius: 20px;
         font-weight: 700;
         color: var(--ocean-dark);
         outline: none;
         cursor: pointer;
     }
+
     .roster-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -78,17 +90,19 @@
     }
     .player-card {
         background: var(--pure-white);
-        border-radius: 16px;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04);
         text-align: center;
+        border: 1px solid #e2e8f0;
         border-bottom: 4px solid var(--ocean-light);
-        transition: all 0.35s ease;
+        transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
         position: relative;
     }
     .player-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 16px 24px -4px rgba(2, 132, 199, 0.15);
+        box-shadow: 0 20px 35px -10px rgba(2, 132, 199, 0.15);
+        border-color: var(--ocean-light);
     }
     .player-img-wrapper {
         height: 220px;
@@ -109,7 +123,7 @@
         position: absolute;
         bottom: 12px;
         right: 12px;
-        background: rgba(2, 132, 199, 0.9);
+        background: rgba(2, 132, 199, 0.95);
         color: var(--pure-white);
         width: 40px;
         height: 40px;
@@ -119,6 +133,7 @@
         justify-content: center;
         font-weight: 900;
         border: 2px solid var(--pure-white);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     .player-fallback-num {
         font-size: 4rem;
@@ -126,19 +141,20 @@
         color: rgba(255, 255, 255, 0.15);
     }
     .player-info { padding: 1.5rem; }
-    .player-name { font-size: 1.2rem; font-weight: 800; color: var(--ocean-dark); }
-    .player-position { color: var(--ocean-blue); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; }
+    .player-name { font-size: 1.15rem; font-weight: 800; color: var(--ocean-dark); margin-bottom: 0.25rem; }
+    .player-position { color: var(--ocean-blue); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* Tactical Pitch EA FC Layout */
+    /* Tactical Pitch Layout */
     .pitch-view-container {
         display: none;
         background: linear-gradient(180deg, #166534 0%, #15803d 100%);
-        border-radius: 20px;
-        padding: 2.5rem 1.5rem;
+        border-radius: 24px;
+        padding: 2.5rem 1rem;
         min-height: 650px;
         box-shadow: inset 0 0 50px rgba(0,0,0,0.4), 0 10px 25px rgba(0,0,0,0.1);
         position: relative;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         border: 3px solid #22c55e;
     }
     .pitch-view-container::before {
@@ -150,6 +166,7 @@
         height: 2px;
         background: rgba(255, 255, 255, 0.35);
         transform: translateY(-50%);
+        pointer-events: none;
     }
     .pitch-center-circle {
         position: absolute;
@@ -166,28 +183,30 @@
         position: relative;
         z-index: 2;
         display: flex;
-        flex-direction: column-reverse; /* Goalkeeper at bottom, lines tracking up */
+        flex-direction: column-reverse;
         justify-content: space-between;
         height: 100%;
         min-height: 580px;
+        min-width: 480px; /* Ensures formation lines don't crunch on small viewports */
     }
     .pitch-line {
         display: flex;
         justify-content: space-around;
         align-items: center;
         width: 100%;
+        padding: 0 0.5rem;
     }
     .pitch-player-node {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         transition: transform 0.3s ease;
     }
     .pitch-player-node:hover { transform: scale(1.1); }
     .pitch-jersey {
-        width: 44px;
-        height: 44px;
+        width: 42px;
+        height: 42px;
         background: var(--ocean-dark);
         color: var(--pure-white);
         border: 2px solid var(--ocean-light);
@@ -196,17 +215,57 @@
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
     .pitch-player-tag {
-        background: rgba(15, 23, 42, 0.85);
+        background: rgba(15, 23, 42, 0.9);
         color: var(--pure-white);
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.72rem;
         font-weight: 700;
         white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Mobile Responsive Overhaul */
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 2rem;
+        }
+        .squad-controls {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        .view-toggles {
+            width: 100%;
+        }
+        .view-btn {
+            flex: 1;
+            justify-content: center;
+            padding: 0.7rem 1rem;
+        }
+        .formation-selector {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .formation-selector select {
+            flex: 1;
+            max-width: 200px;
+        }
+        .roster-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+        .pitch-view-container {
+            padding: 1.5rem 0.5rem;
+            min-height: 550px;
+        }
+        .pitch-rows {
+            min-height: 500px;
+        }
     }
 </style>
 {% endblock %}
@@ -237,13 +296,12 @@
         </div>
     </div>
 
-    <!-- View 1: Roster Grid View with Static Image Path Matching Your Example -->
+    <!-- View 1: Roster Grid View -->
     <div class="roster-grid" id="rosterGridView">
         {% for player in players %}
         <div class="player-card">
             <div class="player-img-wrapper">
                 {% if player.image %}
-                    <!-- Exact template structure matching your requested format -->
                     <img src="{% static player.image %}" alt="{{ player.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="player-fallback-num" style="display:none;">{{ player.jersey_number }}</div>
                 {% else %}
@@ -257,8 +315,10 @@
             </div>
         </div>
         {% empty %}
-        <div class="player-card" style="grid-column: 1 / -1; padding: 3rem;">
-            <p style="color: var(--text-gray); font-weight: 600;">No players added yet.</p>
+        <div class="player-card" style="grid-column: 1 / -1; padding: 4rem 2rem;">
+            <i class="fa-solid fa-users-slash" style="font-size: 3rem; color: var(--ocean-light); margin-bottom: 1rem;"></i>
+            <h3 style="color: var(--ocean-dark); font-weight: 800; margin-bottom: 0.5rem;">No Squad Members Added</h3>
+            <p style="color: var(--text-gray); font-weight: 600; font-size: 0.95rem;">Populate your player roster through the Django Admin panel.</p>
         </div>
         {% endfor %}
     </div>

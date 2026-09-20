@@ -108,7 +108,7 @@
         color: var(--ocean-dark);
     }
 
-    /* Group Stage Section Styles (Ported & Adapted from news.html) */
+    /* Group Stage Section Styles */
     .group-section-wrapper {
         max-width: 1200px;
         margin: 4rem auto 2rem auto;
@@ -427,6 +427,110 @@
         margin: 0;
         line-height: 1.6;
     }
+
+    /* Responsive Mobile Enhancements */
+    @media(max-width: 768px) {
+        .hero {
+            height: 65vh;
+            padding: 0 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.3rem;
+            line-height: 1.15;
+        }
+
+        .hero p {
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-nav-bar {
+            flex-direction: column;
+            gap: 0.8rem;
+            padding: 0 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .ticker-container {
+            margin: -25px 1rem 0 1rem;
+            padding: 1.1rem;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .score-box {
+            font-size: 1.5rem;
+            padding: 0.3rem 0.9rem;
+        }
+
+        .comp-card {
+            padding: 1.5rem 1rem;
+        }
+
+        .comp-card-title {
+            font-size: 1.2rem;
+        }
+
+        .group-pill {
+            padding: 7px 12px;
+            font-size: 0.8rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .carousel-container {
+            height: 340px;
+            border-radius: 16px;
+        }
+
+        .carousel-caption {
+            padding: 1.5rem;
+        }
+
+        .carousel-caption h3 {
+            font-size: 1.4rem;
+        }
+
+        .carousel-caption p {
+            font-size: 0.9rem;
+        }
+
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .carousel-btn.prev { left: 10px; }
+        .carousel-btn.next { right: 10px; }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .media-container {
+            height: 220px;
+        }
+
+        .media-content h4 {
+            font-size: 1.3rem;
+        }
+
+        .media-content p {
+            font-size: 1rem;
+        }
+    }
 </style>
 
 <!-- Hero Section with Direct Redirect Buttons -->
@@ -459,7 +563,7 @@
 
 <!-- Latest Club News Preview Grid -->
 <div class="container" style="max-width: 1200px; margin: 4rem auto; padding: 0 1rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
         <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--ocean-dark); margin: 0;">Latest Club News</h2>
         <a href="{% url 'news' %}" style="color: var(--ocean-blue); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">View All News <i class="fa-solid fa-arrow-right"></i></a>
     </div>
@@ -480,13 +584,13 @@
     </div>
 </div>
 
-<!-- Group Stage Section (Ported dynamically from news.html) -->
+<!-- Group Stage Section -->
 <section class="group-section-wrapper">
     <div class="comp-card">
         <div class="comp-header-flex">
             <h3 class="comp-card-title"><i class="fa-solid fa-layer-group"></i> Tournament Group Standings</h3>
             
-            <!-- Group Filter Pills (Switch between Group A, B, D, E) -->
+            <!-- Group Filter Pills -->
             <div class="group-selector-pills">
                 <button class="group-pill active" onclick="switchGroup('A', event)">Gr. A</button>
                 <button class="group-pill" onclick="switchGroup('B', event)">Gr. B</button>
@@ -634,7 +738,7 @@
     </div>
 </section>
 
-<!-- Slideshow Section (Static Images) -->
+<!-- Slideshow Section -->
 <section class="slideshow-section">
     <h2 class="section-title">Club Spotlight</h2>
     <div class="carousel-container">
@@ -689,7 +793,7 @@
     </div>
 </section>
 
-<!-- Media Gallery Section (8 Cards) -->
+<!-- Media Gallery Section -->
 <section class="gallery-section">
     <h2 class="section-title">Club Highlights & Media</h2>
     <div class="cards-grid">
@@ -797,7 +901,7 @@
     </div>
 </section>
 
-<!-- Combined Scripts for Slideshow and Group Stage Pills -->
+<!-- Combined Scripts -->
 <script>
     // Slideshow JavaScript Controller
     let slideIndex = 0;

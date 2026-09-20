@@ -144,7 +144,7 @@
             background: none;
             border: none;
             color: var(--pure-white);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             cursor: pointer;
             transition: color 0.3s ease;
         }
@@ -201,12 +201,26 @@
             font-size: 0.9rem;
         }
 
-        /* Responsive Breakpoints */
+        /* Responsive Breakpoints & Mobile Enhancements */
         @media(max-width: 768px) {
-            .mobile-menu-toggle {
-                display: block;
+            /* General container and padding adjustment for phones */
+            .container {
+                padding: 1.5rem 1rem;
             }
 
+            /* Make section titles and primary headers bigger & bolder on mobile */
+            .section-title {
+                font-size: 1.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            /* Expand navigation toggle button touch target */
+            .mobile-menu-toggle {
+                display: block;
+                padding: 8px;
+            }
+
+            /* Mobile Dropdown Menu Styling */
             nav {
                 position: absolute;
                 top: 100%;
@@ -221,33 +235,58 @@
             }
 
             nav.active {
-                max-height: 350px;
+                max-height: 400px;
             }
 
             nav ul {
                 flex-direction: column;
                 gap: 0;
-                padding: 1rem 0;
+                padding: 0.5rem 0;
                 width: 100%;
             }
 
             nav ul li {
                 width: 100%;
                 text-align: center;
-                padding: 0.75rem 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            nav ul li:last-child {
+                border-bottom: none;
             }
 
             nav ul li a::after {
-                display: none; /* simpler hover state for mobile view */
+                display: none; 
             }
 
+            /* Make links much bigger and easier to tap with fingers */
             nav ul li a {
                 display: block;
                 width: 100%;
+                padding: 1rem 0;
+                font-size: 1.15rem;
+                font-weight: 700;
             }
             
             nav ul li a:hover {
-                background: rgba(56, 189, 248, 0.1);
+                background: rgba(56, 189, 248, 0.15);
+                color: var(--ocean-light);
+            }
+
+            /* Enlarge footer text & spacing for mobile */
+            footer {
+                padding: 2rem 1rem;
+            }
+            footer p {
+                font-size: 1rem;
+            }
+            .logo-text {
+                font-size: 1.3rem;
+            }
+            .club-crest {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
             }
         }
     </style>

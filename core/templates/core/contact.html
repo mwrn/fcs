@@ -1,6 +1,187 @@
 {% extends 'core/base.html' %}
 {% block title %}Ocean Stars FC | Contact Us{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Contact Page Layout Styles */
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 3rem;
+        align-items: start;
+    }
+
+    .contact-card {
+        background: var(--pure-white);
+        padding: 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border-top: 5px solid var(--ocean-light);
+    }
+
+    .contact-card-info {
+        background: var(--pure-white);
+        padding: 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .club-logo-circle {
+        width: 80px;
+        height: 80px;
+        background: var(--ocean-dark);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem auto;
+        border: 3px solid var(--ocean-light);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .info-box-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        text-align: left;
+        background: var(--off-white);
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--ocean-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ocean-dark);
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        color: var(--ocean-dark);
+    }
+
+    /* Style for Django form rendered widgets */
+    .contact-form input,
+    .contact-form textarea,
+    .contact-form select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: 'Montserrat', sans-serif;
+        background-color: var(--pure-white);
+        color: var(--ocean-dark);
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus,
+    .contact-form select:focus {
+        outline: none;
+        border-color: var(--ocean-light);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .submit-btn {
+        background-color: var(--ocean-light);
+        color: var(--ocean-dark);
+        border: none;
+        padding: 0.9rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        margin-top: 0.5rem;
+    }
+
+    .submit-btn:hover {
+        background-color: var(--ocean-blue);
+        color: var(--pure-white);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive mobile enhancements for bigger features */
+    @media(max-width: 768px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .contact-card, .contact-card-info {
+            padding: 1.8rem 1.2rem;
+        }
+
+        .contact-card-info h3 {
+            font-size: 1.7rem !important;
+        }
+
+        .contact-card-info p {
+            font-size: 1.05rem !important;
+        }
+
+        .contact-card h3 {
+            font-size: 1.6rem !important;
+        }
+
+        /* Make form input elements, text, and labels larger and easier to use on touch screens */
+        .form-group label {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea,
+        .contact-form select {
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .submit-btn {
+            padding: 1.1rem;
+            font-size: 1.15rem;
+        }
+
+        .info-box-container {
+            padding: 1.2rem;
+        }
+
+        .info-row strong {
+            font-size: 1.1rem !important;
+        }
+        
+        .info-row span {
+            font-size: 0.85rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h2 class="section-title">Get In Touch</h2>
@@ -14,20 +195,20 @@
         {% endfor %}
     {% endif %}
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; align-items: start;">
+    <div class="contact-grid">
         
         <!-- Left Side: Club Info & Logo Branding -->
-        <div style="background: var(--pure-white); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; border-top: 5px solid var(--ocean-light);">
-            <div style="width: 80px; height: 80px; background: var(--ocean-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; border: 3px solid var(--ocean-light); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);">
+        <div class="contact-card-info">
+            <div class="club-logo-circle">
                 <span style="font-size: 2.5rem; color: var(--pure-white);">★</span>
             </div>
             
             <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--ocean-dark);">Ocean Stars FC</h3>
             <p style="color: var(--text-gray); font-size: 0.95rem; margin-bottom: 2rem;">Official Club Headquarters & Inquiries</p>
             
-            <div style="display: flex; flex-direction: column; gap: 1.2rem; text-align: left; background: var(--off-white); padding: 1.5rem; border-radius: 12px;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 40px; height: 40px; background: var(--ocean-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ocean-dark); font-weight: bold;">
+            <div class="info-box-container">
+                <div class="info-row">
+                    <div class="info-icon">
                         <i class="fa-solid fa-phone"></i>
                     </div>
                     <div>
@@ -36,8 +217,8 @@
                     </div>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 40px; height: 40px; background: var(--ocean-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ocean-dark); font-weight: bold;">
+                <div class="info-row">
+                    <div class="info-icon">
                         <i class="fa-solid fa-envelope"></i>
                     </div>
                     <div>
@@ -46,8 +227,8 @@
                     </div>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 40px; height: 40px; background: var(--ocean-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ocean-dark); font-weight: bold;">
+                <div class="info-row">
+                    <div class="info-icon">
                         <i class="fa-solid fa-location-dot"></i>
                     </div>
                     <div>
@@ -59,23 +240,23 @@
         </div>
 
         <!-- Right Side: Contact / Tryout Form Connected to DB -->
-        <div style="background: var(--pure-white); padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <div class="contact-card">
             <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--ocean-dark);">Send Us a Message</h3>
             
-            <form method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <form method="POST" class="contact-form">
                 {% csrf_token %}
                 
                 {% for field in form %}
-                <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--ocean-dark);">{{ field.label }}</label>
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}
-                        <span style="color: #ef4444; font-size: 0.8rem;">{{ field.errors.0 }}</span>
+                        <span style="color: #ef4444; font-size: 0.8rem; display: block; margin-top: 0.2rem;">{{ field.errors.0 }}</span>
                     {% endif %}
                 </div>
                 {% endfor %}
 
-                <button type="submit" style="background-color: var(--ocean-light); color: var(--ocean-dark); border: none; padding: 0.9rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background-color 0.3s, transform 0.2s; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4); margin-top: 0.5rem;">
+                <button type="submit" class="submit-btn">
                     Send Message
                 </button>
             </form>
